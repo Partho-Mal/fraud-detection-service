@@ -21,7 +21,7 @@ This repository demonstrates how a machine learning model is trained, optimized,
 
 The following tree shows the repository layout with a brief description of each directory and file.
 
-```
+```text
 .
 ├── app                         Application source code
 │   ├── api                     HTTP API layer
@@ -49,11 +49,11 @@ The following tree shows the repository layout with a brief description of each 
 │   ├── data_contract.md        Input contract
 │   ├── deployment.md           Deployment notes
 │   ├── images                  Documentation assets
-│   │   ├── end_to_end_latency_p95_local.png        p95 latency proof
-│   │   ├── load_test_latency_results.png           Load test results
-│   │   ├── onnx_inference_latency_comparison.png   ONNX vs pickle
-│   │   ├── predict_api_example_responses.png       API examples
-│   │   └── shadow_mode_recall_comparison.png       Shadow recall
+│   │   ├── end_to_end_latency_p95_local.png
+│   │   ├── load_test_latency_results.png
+│   │   ├── onnx_inference_latency_comparison.png
+│   │   ├── predict_api_example_responses.png
+│   │   └── shadow_mode_recall_comparison.png
 │   ├── model.md                Model overview
 │   ├── observability.md        Logging strategy
 │   ├── shadow_mode.md          Shadow mode details
@@ -68,8 +68,8 @@ The following tree shows the repository layout with a brief description of each 
 ├── ml                          Training pipeline
 │   ├── benchmark.py            Inference benchmark
 │   ├── convert_to_onnx.py      ONNX conversion
-│   ├── datasets                Training datasets
-│   │   └── credit_card_transactions.csv  Training data
+│   ├── datasets
+│   │   └── credit_card_transactions.csv
 │   ├── evaluate.py             Model evaluation
 │   ├── preprocess.py           Feature processing
 │   ├── train.py                Model training
@@ -83,7 +83,7 @@ The following tree shows the repository layout with a brief description of each 
 ├── requirements.txt            Python dependencies
 │
 └── scripts                     Utility scripts
-    └── generate_fraud_dataset.py   Synthetic data generation
+    └── generate_fraud_dataset.py
 ```
 
 ---
@@ -105,31 +105,26 @@ flowchart LR
 
 ## API Example
 
-Endpoint: POST /predict
+Endpoint: `POST /predict`
 
-Example request and response formats are documented in:
-
-* docs/api.md
+Detailed request and response formats:
+[docs/api.md](docs/api.md)
 
 Example response screenshots:
-
-* docs/images/predict_api_example_responses.png
+[docs/images/predict_api_example_responses.png](docs/images/predict_api_example_responses.png)
 
 ---
 
 ## Performance Evidence
 
 ONNX inference latency comparison:
-
-* docs/images/onnx_inference_latency_comparison.png
+[docs/images/onnx_inference_latency_comparison.png](docs/images/onnx_inference_latency_comparison.png)
 
 End-to-end p95 latency (local):
-
-* docs/images/end_to_end_latency_p95_local.png
+[docs/images/end_to_end_latency_p95_local.png](docs/images/end_to_end_latency_p95_local.png)
 
 Load test results:
-
-* docs/images/load_test_latency_results.png
+[docs/images/load_test_latency_results.png](docs/images/load_test_latency_results.png)
 
 ---
 
@@ -142,12 +137,10 @@ Shadow mode runs a candidate model in parallel without affecting production deci
 * Recall improvements are measured offline
 
 Recall comparison evidence:
-
-* docs/images/shadow_mode_recall_comparison.png
+[docs/images/shadow_mode_recall_comparison.png](docs/images/shadow_mode_recall_comparison.png)
 
 Detailed explanation:
-
-* docs/shadow_mode.md
+[docs/shadow_mode.md](docs/shadow_mode.md)
 
 ---
 
@@ -155,7 +148,9 @@ Detailed explanation:
 
 Build and start the service:
 
+```bash
 docker compose up --build
+```
 
 Service URL:
 [http://localhost:8000](http://localhost:8000)
@@ -169,7 +164,8 @@ Interactive API documentation:
 
 Runtime behavior is controlled via environment variables.
 
-See .env.example for details.
+See:
+[.env.example](.env.example)
 
 ---
 
