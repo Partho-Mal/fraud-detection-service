@@ -1,0 +1,33 @@
+docker compose up --build
+
+curl -X POST \
+  http://127.0.0.1:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount_cents": 500000,
+    "transaction_country": "NG",
+    "channel": "ONLINE",
+    "entry_mode": "APP"
+  }'
+
+curl -s -X POST \
+  http://127.0.0.1:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount_cents": 1200,
+    "transaction_country": "IN",
+    "channel": "POS",
+    "entry_mode": "CHIP"
+  }' && echo
+
+docker run -p 8000:8000 -e MODE=SHADOW fraud-engine
+
+curl -X POST \
+  http://127.0.0.1:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount_cents": 900000,
+    "transaction_country": "NG",
+    "channel": "ONLINE",
+    "entry_mode": "APP"
+  }'

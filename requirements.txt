@@ -1,0 +1,13 @@
+numpy
+pandas
+scikit-learn
+imbalanced-learn
+xgboost
+joblib
+fastapi
+uvicorn
+gunicorn
+onnxruntime 
+onnxmltools
+onnxconverter-common
+requests
