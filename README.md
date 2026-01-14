@@ -107,23 +107,23 @@ flowchart LR
 
 Endpoint: `POST /predict`
 
-Detailed request and response formats:
+Detailed request and response formats:\
 [docs/api.md](docs/api.md)
 
-Example response screenshots:
+Example response screenshots:\
 [docs/images/predict_api_example_responses.png](docs/images/predict_api_example_responses.png)
 
 ---
 
 ## Performance Evidence
 
-ONNX inference latency comparison:
+ONNX inference latency comparison:\
 [docs/images/onnx_inference_latency_comparison.png](docs/images/onnx_inference_latency_comparison.png)
 
-End-to-end p95 latency (local):
+End-to-end p95 latency (local):\
 [docs/images/end_to_end_latency_p95_local.png](docs/images/end_to_end_latency_p95_local.png)
 
-Load test results:
+Load test results:\
 [docs/images/load_test_latency_results.png](docs/images/load_test_latency_results.png)
 
 ---
@@ -136,10 +136,10 @@ Shadow mode runs a candidate model in parallel without affecting production deci
 * Responses remain unchanged
 * Recall improvements are measured offline
 
-Recall comparison evidence:
+Recall comparison evidence:\
 [docs/images/shadow_mode_recall_comparison.png](docs/images/shadow_mode_recall_comparison.png)
 
-Detailed explanation:
+Detailed explanation:\
 [docs/shadow_mode.md](docs/shadow_mode.md)
 
 ---
@@ -152,10 +152,10 @@ Build and start the service:
 docker compose up --build
 ```
 
-Service URL:
+Service URL:\
 [http://localhost:8000](http://localhost:8000)
 
-Interactive API documentation:
+Interactive API documentation:\
 [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ---
@@ -164,7 +164,7 @@ Interactive API documentation:
 
 Runtime behavior is controlled via environment variables.
 
-See:
+See:\
 [.env.example](.env.example)
 
 ---
