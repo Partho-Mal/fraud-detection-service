@@ -1,188 +1,174 @@
-# Fraud Detection Engine
+# High-Frequency Fraud Detection Engine
 
-A production-style fraud detection inference service focused on low latency, safe model iteration, and operational clarity.
+A production-grade inference microservice optimized for low latency, operational resilience, and safe model iteration.
 
-This repository demonstrates how a machine learning model is trained, optimized, deployed, and evaluated using patterns commonly used in large engineering organizations.
-
----
-
-## High-Level Capabilities
-
-* HTTP inference API
-* ONNX Runtime for low-latency predictions
-* Shadow mode for safe model evaluation
-* Configurable fraud thresholds
-* Docker + Gunicorn deployment
-* Structured logging for observability
+This repository demonstrates how a machine learning system is architected, optimized, deployed, and validated using SRE (Site Reliability Engineering) patterns found in high-scale engineering organizations.
 
 ---
 
-## Production Changes and Hardening Notes
+## Key Capabilities
 
-This section tracks **explicit production-level changes** made to the system over time. Each major hardening effort is documented as a versioned artifact under `docs/` to preserve architectural history and operational context.
+* **High Throughput:** Handles 170+ RPS on commodity 8-core hardware.
+* **Low Latency:** Sub-100ms p95 latency via ONNX Runtime optimization.
+* **Resilience:** Circuit breakers (timeouts) and health probes for Kubernetes readiness.
+* **Safe Iteration:** "Shadow Mode" allows testing candidate models on live traffic without impacting users.
+* **Observability:** Structured JSON logging with probabilistic sampling.
 
-**Current baseline**
+---
 
-* **v1.2.0 – Production Hardening**
-  Covers performance optimizations, concurrency tuning, reliability safeguards, observability improvements, and load validation.
-  See: [docs/production_v1.md](docs/production_v1.md)
+## Architecture
 
-**Future updates**
+The system follows a standard synchronous inference pattern with an asynchronous shadow path for model evaluation. 
 
-* Subsequent production changes will be documented as new versioned files (for example `production_v2.md`) and referenced here without modifying prior records.
+```mermaid
+flowchart LR
+    Client([Client / Payment Gateway]) -->|POST /predict| API[FastAPI Service]
+    API --> Preprocessor[Feature Engineering]
+    Preprocessor --> ONNX_Model[ONNX Runtime Session]
+    ONNX_Model --> Decision{Fraud Probability > Threshold?}
+    
+    Decision -->|Primary Path| Response([200 OK: Fraud/Safe])
+    
+    Decision -.->|Shadow Path (Async)| Shadow_Logger[Shadow Logger]
+    Shadow_Logger -.-> Logs[(Structured Logs)]
+```
+
+---
+
+## Production Hardening (v1.2.0)
+
+This project has been transitioned from a prototype to a hardened production service. Major architectural changes are documented in `docs/production_v1.md`.
+
+**Key Improvements:**
+* **Performance:** Migrated inference from Pickle to **ONNX Runtime**, reducing latency by **70%** (300ms → 90ms).
+* **Concurrency:** Tuned `WEB_CONCURRENCY=8` to match physical cores, eliminating context-switching overhead.
+* **Reliability:** Implemented a **300ms Circuit Breaker** to shed load during saturation, maintaining 99.9% availability.
+* **Validation:** Verified capacity via **K6 Stress Testing**, establishing a safe throughput of ~35 concurrent users.
+
+> See full release notes: [docs/production_v1.md](docs/production_v1.md)
+
+---
+
+## Getting Started
+
+You can run the service using Docker (recommended for consistency) or a local Python environment (recommended for development).
+
+### Option A: Docker (Recommended)
+
+This simulates the production environment exactly.
+
+**1. Build and Start**
+```bash
+docker compose up --build
+```
+
+**2. Verify Service**
+* **API:** `http://localhost:8000`
+* **Docs:** `http://localhost:8000/docs`
+* **Health:** `http://localhost:8000/health/live`
+
+### Option B: Local Development (Python venv)
+
+Use this method if you need to run training scripts (`ml/train.py`), analyze notebooks, or debug code in an IDE.
+
+**Prerequisites:** Python 3.11+
+
+**1. Create Virtual Environment**
+
+*Linux / macOS:*
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+*Windows (PowerShell):*
+```powershell
+python -m venv venv
+.\venv\Scripts\activate
+```
+
+**2. Install Dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+**3. Configuration**
+Copy the example environment file:
+```bash
+cp .env.example .env
+# Tip: Set WEB_CONCURRENCY=1 in .env for easier local debugging
+```
+
+**4. Run Service**
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+---
+
+## Performance & Validation
+
+We rely on data, not guesses. The following evidence validates the system's performance claims.
+
+### 1. Latency Benchmarks
+Comparison of Scikit-Learn vs. ONNX Runtime inference speeds.
+![ONNX Latency Comparison](docs/images/onnx_inference_latency_comparison.png)
+
+### 2. Load Testing Results
+System behavior under stress (K6 ramp-up test), showing stable latency until saturation.
+![Load Test Results](docs/images/load_test_latency_results.png)
+
+### 3. Shadow Mode Analysis
+Recall comparison between the legacy model and the new candidate model running in shadow mode.
+![Shadow Mode Recall](docs/images/shadow_mode_recall_comparison.png)
 
 ---
 
 ## Repository Structure
 
-The following tree shows the repository layout with a brief description of each directory and file.
-
 ```text
 .
-├── app                         Application source code
-│   ├── api                     HTTP API layer
-│   │   └── v1                  API versioning
-│   │       └── predict.py      Fraud prediction endpoint
-│   ├── core                    Core configuration
-│   │   └── config.py           Environment settings
-│   ├── main.py                 Application entrypoint
-│   ├── models                  Inference-related logic
-│   │   ├── onnx_model.py       ONNX model loader
-│   │   └── shadow.py           Shadow mode handling
-│   ├── schemas                 Request/response schemas
-│   │   └── transaction.py      Input validation
-│   └── services                Business logic layer
-│       └── inference.py        Inference execution
+├── app                         # Application source code
+│   ├── api/v1                  # API endpoints (FastAPI)
+│   ├── core                    # Config and logging setup
+│   ├── models                  # ONNX loader & Shadow mode logic
+│   └── services                # Business logic (Inference pipeline)
 │
-├── credit_card_transactions.csv    Sample transaction data
-├── curl.txt                         Curl request examples
-├── docker-compose.yml               Local orchestration
-├── Dockerfile                       Container definition
+├── docs                        # Architectural documentation
+│   ├── production_v1.md        # Release notes & hardening details
+│   ├── architecture.md         # System design deep-dive
+│   └── shadow_mode.md          # Shadow deployment strategy
 │
-├── docs                        System documentation
-│   ├── api.md                  API reference
-│   ├── architecture.md         System design
-│   ├── data_contract.md        Input contract
-│   ├── deployment.md           Deployment notes
-│   ├── production_v1.md        Production hardening notes (v1)
-│   ├── images                  Documentation assets
-│   │   ├── end_to_end_latency_p95_local.png
-│   │   ├── load_test_latency_results.png
-│   │   ├── onnx_inference_latency_comparison.png
-│   │   ├── predict_api_example_responses.png
-│   │   └── shadow_mode_recall_comparison.png
-│   ├── model.md                Model overview
-│   ├── observability.md        Logging strategy
-│   ├── shadow_mode.md          Shadow mode details
-│   └── troubleshooting.md     Common issues
+├── load_test                   # K6 Performance tests
+│   ├── capacity_test.js        # Ramp-up test for saturation point
+│   └── stress_test_realism.js  # Realistic traffic simulation
 │
-├── load_test                   Performance testing
-│   ├── latency_test.py         Latency benchmark
-│   └── load_test.py            Concurrent load
+├── ml                          # Machine Learning Pipeline
+│   ├── train.py                # Model training script
+│   ├── convert_to_onnx.py      # ONNX conversion utility
+│   └── evaluate.py             # Performance metrics calculation
 │
-├── local_testing.md            Local test guide
+├── models                      # Serialized Model Artifacts
+│   ├── fraud_model.onnx        # Production Optimized Model
+│   └── preprocessor.pkl        # Scikit-Learn Pipeline
 │
-├── ml                          Training pipeline
-│   ├── benchmark.py            Inference benchmark
-│   ├── convert_to_onnx.py      ONNX conversion
-│   ├── datasets
-│   │   └── credit_card_transactions.csv
-│   ├── evaluate.py             Model evaluation
-│   ├── preprocess.py           Feature processing
-│   ├── train.py                Model training
-│   └── verify_model.py         Artifact validation
-│
-├── models                      Deployed artifacts
-│   ├── fraud_model.onnx        ONNX model
-│   └── fraud_model.pkl         Pickle model
-│
-├── README.md                   Project overview
-├── requirements.txt            Python dependencies
-│
-└── scripts                     Utility scripts
-    └── generate_fraud_dataset.py
+├── docker-compose.yml          # Container orchestration
+└── requirements.txt            # Python dependencies
 ```
-
----
-
-## Architecture Overview
-
-```mermaid
-flowchart LR
-    Client --> API
-    API --> Preprocessor
-    Preprocessor --> ONNX_Model
-    ONNX_Model --> Decision
-    Decision -->|PROD| Response
-    Decision -->|SHADOW| Shadow_Logger
-    Shadow_Logger --> Logs
-```
-
----
-
-## API Example
-
-Endpoint: `POST /predict`
-
-Detailed request and response formats:\
-[docs/api.md](docs/api.md)
-
-Example response screenshots:\
-[docs/images/predict_api_example_responses.png](docs/images/predict_api_example_responses.png)
-
----
-
-## Performance Evidence
-
-ONNX inference latency comparison:\
-[docs/images/onnx_inference_latency_comparison.png](docs/images/onnx_inference_latency_comparison.png)
-
-End-to-end p95 latency (local):\
-[docs/images/end_to_end_latency_p95_local.png](docs/images/end_to_end_latency_p95_local.png)
-
-Load test results:\
-[docs/images/load_test_latency_results.png](docs/images/load_test_latency_results.png)
-
----
-
-## Shadow Mode Validation
-
-Shadow mode runs a candidate model in parallel without affecting production decisions.
-
-* Predictions are logged
-* Responses remain unchanged
-* Recall improvements are measured offline
-
-Recall comparison evidence:\
-[docs/images/shadow_mode_recall_comparison.png](docs/images/shadow_mode_recall_comparison.png)
-
-Detailed explanation:\
-[docs/shadow_mode.md](docs/shadow_mode.md)
-
----
-
-## Running Locally
-
-Build and start the service:
-
-```bash
-docker compose up --build
-```
-
-Service URL:\
-[http://localhost:8000](http://localhost:8000)
-
-Interactive API documentation:\
-[http://localhost:8000/docs](http://localhost:8000/docs)
 
 ---
 
 ## Configuration
 
-Runtime behavior is controlled via environment variables.
+Runtime behavior is controlled via environment variables. See [.env.example](.env.example) for defaults.
 
-See:\
-[.env.example](.env.example)
+| Variable | Default | Description |
+| :--- | :--- | :--- |
+| `ENV` | `local` | Environment name (local/staging/prod) |
+| `MODE` | `SHADOW` | `SHADOW` (log only) or `PROD` (active blocking) |
+| `FRAUD_THRESHOLD` | `0.9` | Probability threshold for flagging fraud |
+| `WEB_CONCURRENCY` | `4` | Number of worker processes (Tune to CPU cores) |
+| `LOG_SAMPLING_RATE` | `0.01` | Probability (0-1) of logging safe requests |
 
 ---
 
