@@ -25,7 +25,7 @@ This section tracks **explicit production-level changes** made to the system ove
 
 * **v1.2.0 – Production Hardening**
   Covers performance optimizations, concurrency tuning, reliability safeguards, observability improvements, and load validation.
-  See: `docs/production_v1.md`
+  See: [docs/production_v1.md](docs/images/predict_api_example_responses.png)
 
 **Future updates**
 
