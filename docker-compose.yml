@@ -7,5 +7,16 @@ services:
       - "8000:8000"
     volumes:
       - ./models:/app/models
+    environment:
+      # (2 x CPU_Cores) + 1 is the golden rule. 
+      # On a dev machine, 4 is a safe number to handle blocking.
+      - WEB_CONCURRENCY=8
+      - OMP_NUM_THREADS=1
+      - MKL_NUM_THREADS=1
+      - OPENBLAS_NUM_THREADS=1
+      - LOG_SAMPLING_RATE=0.01
+      # NEW: Silence sklearn/joblib parallel warnings
+      - LOKY_MAX_CPU_COUNT=1
+      - JOBLIB_MULTIPROCESSING=0
     env_file:
       - .env

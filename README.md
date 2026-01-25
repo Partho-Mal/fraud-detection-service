@@ -17,6 +17,22 @@ This repository demonstrates how a machine learning model is trained, optimized,
 
 ---
 
+## Production Changes and Hardening Notes
+
+This section tracks **explicit production-level changes** made to the system over time. Each major hardening effort is documented as a versioned artifact under `docs/` to preserve architectural history and operational context.
+
+**Current baseline**
+
+* **v1.2.0 – Production Hardening**
+  Covers performance optimizations, concurrency tuning, reliability safeguards, observability improvements, and load validation.
+  See: `docs/production_v1.md`
+
+**Future updates**
+
+* Subsequent production changes will be documented as new versioned files (for example `production_v2.md`) and referenced here without modifying prior records.
+
+---
+
 ## Repository Structure
 
 The following tree shows the repository layout with a brief description of each directory and file.
@@ -48,6 +64,7 @@ The following tree shows the repository layout with a brief description of each 
 │   ├── architecture.md         System design
 │   ├── data_contract.md        Input contract
 │   ├── deployment.md           Deployment notes
+│   ├── production_v1.md        Production hardening notes (v1)
 │   ├── images                  Documentation assets
 │   │   ├── end_to_end_latency_p95_local.png
 │   │   ├── load_test_latency_results.png

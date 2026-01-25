@@ -37,7 +37,7 @@ def run_benchmark(n=200):
             failures += 1
 
     if not latencies:
-        print("❌ All requests failed. Aborting stats.")
+        print("All requests failed. Aborting stats.")
         return
 
     latencies = np.array(latencies)
