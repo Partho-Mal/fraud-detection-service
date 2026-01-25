@@ -128,32 +128,68 @@ Recall comparison between the legacy model and the new candidate model running i
 
 ```text
 .
-├── app                         # Application source code
-│   ├── api/v1                  # API endpoints (FastAPI)
-│   ├── core                    # Config and logging setup
-│   ├── models                  # ONNX loader & Shadow mode logic
-│   └── services                # Business logic (Inference pipeline)
+├── app                         Application source code
+│   ├── api                     HTTP API layer
+│   │   └── v1                  API versioning
+│   │       └── predict.py      Fraud prediction endpoint
+│   ├── core                    Core configuration
+│   │   └── config.py           Environment settings
+│   ├── main.py                 Application entrypoint
+│   ├── models                  Inference-related logic
+│   │   ├── onnx_model.py       ONNX model loader
+│   │   └── shadow.py           Shadow mode handling
+│   ├── schemas                 Request/response schemas
+│   │   └── transaction.py      Input validation
+│   └── services                Business logic layer
+│       └── inference.py        Inference execution
 │
-├── docs                        # Architectural documentation
-│   ├── production_v1.md        # Release notes & hardening details
-│   ├── architecture.md         # System design deep-dive
-│   └── shadow_mode.md          # Shadow deployment strategy
+├── credit_card_transactions.csv    Sample transaction data
+├── curl.txt                         Curl request examples
+├── docker-compose.yml               Local orchestration
+├── Dockerfile                       Container definition
 │
-├── load_test                   # K6 Performance tests
-│   ├── capacity_test.js        # Ramp-up test for saturation point
-│   └── stress_test_realism.js  # Realistic traffic simulation
+├── docs                        System documentation
+│   ├── api.md                  API reference
+│   ├── architecture.md         System design
+│   ├── data_contract.md        Input contract
+│   ├── deployment.md           Deployment notes
+│   ├── production_v1.md        Production hardening notes (v1)
+│   ├── images                  Documentation assets
+│   │   ├── end_to_end_latency_p95_local.png
+│   │   ├── load_test_latency_results.png
+│   │   ├── onnx_inference_latency_comparison.png
+│   │   ├── predict_api_example_responses.png
+│   │   └── shadow_mode_recall_comparison.png
+│   ├── model.md                Model overview
+│   ├── observability.md        Logging strategy
+│   ├── shadow_mode.md          Shadow mode details
+│   └── troubleshooting.md     Common issues
 │
-├── ml                          # Machine Learning Pipeline
-│   ├── train.py                # Model training script
-│   ├── convert_to_onnx.py      # ONNX conversion utility
-│   └── evaluate.py             # Performance metrics calculation
+├── load_test                   Performance testing
+│   ├── latency_test.py         Latency benchmark
+│   └── load_test.py            Concurrent load
 │
-├── models                      # Serialized Model Artifacts
-│   ├── fraud_model.onnx        # Production Optimized Model
-│   └── preprocessor.pkl        # Scikit-Learn Pipeline
+├── local_testing.md            Local test guide
 │
-├── docker-compose.yml          # Container orchestration
-└── requirements.txt            # Python dependencies
+├── ml                          Training pipeline
+│   ├── benchmark.py            Inference benchmark
+│   ├── convert_to_onnx.py      ONNX conversion
+│   ├── datasets
+│   │   └── credit_card_transactions.csv
+│   ├── evaluate.py             Model evaluation
+│   ├── preprocess.py           Feature processing
+│   ├── train.py                Model training
+│   └── verify_model.py         Artifact validation
+│
+├── models                      Deployed artifacts
+│   ├── fraud_model.onnx        ONNX model
+│   └── fraud_model.pkl         Pickle model
+│
+├── README.md                   Project overview
+├── requirements.txt            Python dependencies
+│
+└── scripts                     Utility scripts
+    └── generate_fraud_dataset.py
 ```
 
 ---
