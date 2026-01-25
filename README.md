@@ -29,7 +29,7 @@ flowchart LR
     
     Decision -->|Primary Path| Response([200 OK: Fraud/Safe])
     
-    Decision -.->|Shadow Path (Async)| Shadow_Logger[Shadow Logger]
+    Decision -.->|Shadow Path - Async| Shadow_Logger[Shadow Logger]
     Shadow_Logger -.-> Logs[(Structured Logs)]
 ```
 
